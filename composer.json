@@ -1,10 +1,11 @@
 {
     "name": "f2000/portail_formation",
+    "description": "Exo AFPA",
     "license": "proprietary",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "F2000FR\\": "src/F2000FR"
         },
         "classmap": [
             "app/AppKernel.php",
