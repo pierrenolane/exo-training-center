@@ -1,0 +1,25 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_settings.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    <h1 class="page-header">Configuration</h1>
+
+    <div class="row placeholders">
+        {% for graph in graphs %}
+            <div class="col-xs-6 col-sm-3 placeholder">
+                <canvas id="{{ graph.id }}" data-title="{{ graph.name }}"></canvas>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        $(document).ready(function () {
+        {% for graph in graphs %}
+                buildDoughnutGraph('{{ graph.id }}', {{ graph.data }});
+        {% endfor %}
+            });
+    </script>
+{% endblock %}

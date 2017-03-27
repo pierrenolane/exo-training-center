@@ -1,0 +1,12 @@
+<tr data-category-id="{{ category.id }}">
+    <td>{% for i in 0..level %}&nbsp;{% endfor %}{{ category.name }}</td>
+    <td>{{ category.modules | length }}</td>
+    <td class="actions">
+        <span class="update-category glyphicon glyphicon-edit"></span>
+        <span class="delete-category glyphicon glyphicon-remove-circle"></span>
+    </td>
+</tr>
+
+{% for subcategory in categories if subcategory.parent == category %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:showCategoryTr.html.twig' with {'categories': categories, 'category': subcategory, 'level' : level+5 } %}
+{% endfor %}

@@ -1,0 +1,28 @@
+<div class="response-container">
+    <div class="row">
+        <div class="col-md-1">
+            <button type="button" class="delete-response btn btn-xs btn-danger">
+                <span class="glyphicon glyphicon-minus-sign"></span>
+            </button>
+        </div>
+        <div class="col-md-8">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="col-md-3">
+            {{ form_row(form.valid) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('input[type=checkbox]').bootstrapToggle({
+            on: 'Réponse valide',
+            off: 'Réponse invalide',
+            onstyle: 'success',
+            offstyle: 'danger',
+            width: 125,
+            size: 'small',
+        });
+    });
+</script>

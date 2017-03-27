@@ -1,0 +1,132 @@
+<div id="quizz-answer">
+    <h1 id="quizz-timer">00:00</h1>
+    {% for resultQuestion in form.resultQuestions %}
+        <div id="quizz-step-{{ loop.index }}" class="quizz-step">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>{{ resultQuestion.vars.value.question.name }}</h2>
+                </div>
+            </div>
+
+            {% for resultResponse in resultQuestion.resultResponses %}
+                <div class="row">
+                    <div class="col-md-2">
+                        {{ form_row(resultResponse.checked) }}
+                    </div>
+                    <div class="col-md-10 va-75">
+                        {{ resultResponse.vars.value.response.name }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    {{ form_widget(form) }}
+
+    <div class="row actions">
+        <div class="col-md-12">
+            <button id="quizz-prevQ" class="btn btn-sm btn-primary">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+            </button>
+
+            {% for resultQuestion in form.resultQuestions %}
+                <span id="quizz-dot-{{ loop.index }}"
+                      class="glyphicon glyphicon-dot empty"></span>
+            {% endfor %}
+
+            <button id="quizz-nextQ" class="btn btn-sm btn-primary">
+                <span class="glyphicon glyphicon-arrow-right"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row actions">
+        <div class="col-md-12">
+            <span id="quizz-submit" class="btn btn-success disabled">
+                Valider les réponses
+            </span>
+        </div>
+    </div>
+</div>
+
+<script>
+    var nbQuestions = '{{ form.resultQuestions | length }}';
+    var questionNum = 1;
+
+    var startTime = new Date('{{ startDate | date('Y-m-d H:i:s') }}');
+
+    $(document).ready(function () {
+        $('#quizz-answer input[type=checkbox]').bootstrapToggle({
+            on: 'Correct',
+            off: 'Incorrect',
+            onstyle: 'success',
+            offstyle: 'danger',
+            width: 100,
+            size: 'small',
+        });
+
+        $('#quizz-prevQ').on('click', function () {
+            if (!$(this).hasClass('disabled')) {
+                showQuestion(questionNum--);
+            }
+        });
+
+        $('#quizz-nextQ').on('click', function () {
+            if (!$(this).hasClass('disabled')) {
+                showQuestion(questionNum++);
+            }
+        });
+
+        $('#quizz-submit').on('click', function () {
+            if (!$(this).hasClass('disabled')) {
+                data = $('#quizz-answer').find('input').serialize();
+                $.post('{{ path('show_quizz', {'idTrainingModule' : idTrainingModule}) }}', data)
+                        .done(function (data) {
+                            if (data == 'OK') {
+                                $('#modal-quizz').modal('hide');
+                            }
+                        });
+            }
+        });
+
+        showQuestion(questionNum);
+
+        // timer
+        window.setInterval(tick, 1000);
+        tick();
+    });
+
+    /**
+     * Show the current question
+     */
+    function showQuestion() {
+        // hide all
+        $('.quizz-step').hide();
+        $('.glyphicon-dot').removeClass('active');
+
+        // show right info
+        $('#quizz-step-' + questionNum).show();
+        $('#quizz-dot-' + questionNum).addClass('active full');
+
+        // check prev/next button
+        $('#quizz-prevQ, #quizz-nextQ').removeClass('disabled');
+        if (questionNum == 1) {
+            $('#quizz-prevQ').addClass('disabled');
+        }
+        if (questionNum == nbQuestions) {
+            $('#quizz-nextQ').addClass('disabled');
+        }
+
+        // check submit button
+        if ($('.glyphicon-dot.full').length == nbQuestions) {
+            $('#quizz-submit').removeClass('disabled');
+        }
+    }
+
+    /**
+     * Show time
+     */
+    function tick() {
+        $('#quizz-timer').html(new Date(new Date() - startTime).toISOString().substr(14, 5));
+    }
+</script>

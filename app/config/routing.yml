@@ -1,0 +1,7 @@
+app:
+    resource: "@F2000FRTrainingCenterBundle/Controller/"
+    type:     annotation
+    
+quizz:
+    resource: "@F2000FRQuizzBundle/Controller/"
+    type:     annotation

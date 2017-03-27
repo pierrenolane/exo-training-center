@@ -1,0 +1,114 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_settings.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    <h1 class="page-header">Actions de formation</h1>
+
+    <div id="navbar" class="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <button id="create-training" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Nouvelle action
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Actions de formation</div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Client / Commanditaire</th>
+                        <th>Intitulé</th>
+                        <th>Superviseur</th>
+                        <th>Stagiaires</th>
+                        <th>Dates</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for training in trainings %}
+                        <tr data-training-id="{{ training.id }}">
+                            <td>{{ training.client }} {% if training.sponsor %} / {{ training.sponsor }} {% endif %}</td>
+                            <td>{{ training.name }}</td>
+                            <td>
+                                <a class="update-training-users" href="#">
+                                    {% for user in training.users if user.role == constant('ROLE_MANAGER', user) %}
+                                        {{ user.name }}<br />
+                                    {% endfor %}
+                                </a>
+                            </td>
+                            <td>
+                                <a class="update-training-users" href="#">
+                                    {% set nb = 0 %}
+                                    {% for user in training.users if user.role != constant('ROLE_MANAGER', user) %}
+                                        {% set nb = nb +1 %}
+                                    {% endfor %}
+                                    {{ nb }} participants
+                                </a>
+                            </td>
+                            <td>
+                                <a class="update-training-planning" href="#">
+                                    [{{ training.startDate |date('d/m/Y') }} - {{ training.endDate |date('d/m/Y') }}]
+                                </a>
+                            </td>
+                            <td class="actions">
+                                <span class="update-training glyphicon glyphicon-edit"></span>
+                                <span class="delete-training glyphicon glyphicon-remove-circle"></span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#create-training').on('click', function () {
+                $.get('{{ path('bo_training_create') }}')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-training').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/training/update/' + $(this).closest('tr').data('training-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-training-users').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/training/update/' + $(this).closest('tr').data('training-id') + '/users')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-training-planning').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/training/update/' + $(this).closest('tr').data('training-id') + '/planning')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.delete-training').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/training/delete/' + $(this).closest('tr').data('training-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+        });
+    </script>
+{% endblock %}

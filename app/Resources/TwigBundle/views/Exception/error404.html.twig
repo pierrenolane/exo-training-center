@@ -1,0 +1,50 @@
+{% extends "F2000FRTrainingCenterBundle::layout.html.twig" %}
+
+{% block title %}F2000.FR - Intranet formation - Identification{% endblock %}
+
+{% block header %}
+    <!--[if lte IE 7]>
+    <a href="http://www.browserupgrade.info/fr/ie6/" target="_blank">
+        <div class="alert alert-danger" style="width:90%;max-width:800px;margin:0px auto 25px auto;">
+            <p>
+                <strong>Attention ! </strong> Votre navigateur (Internet Explorer 6 ou 7) présente de sérieuses lacunes en terme de sécurité et de performances, dues à son obsolescence. En conséquence, ce site sera consultable mais de manière moins optimale qu'avec un navigateur récent.
+                <br/>
+                <i>Cliquez sur ce bandeau pour en savoir plus</i>
+            </p>
+        </div>
+    </a>
+    <![endif]-->
+
+    <header>
+        <strong><a href="http://www.F2000.FR/">F2000.FR</a></strong>
+        <h1>Intranet formation</h1>
+        <br /><br /><br />
+    </header>
+{% endblock %}
+
+{% block body %}
+    <section id="content-error" class="main-section">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span4 offset4 alert alert-danger">
+                    <h2>Page introuvable</h2>
+                    <br />
+                    Vous allez être redirigé sur la page d'accueil.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        setTimeout(function () {
+            window.location = '{{ path('home') }}';
+        }, 3000);
+    </script>
+{% endblock %}
+
+
+{% block footer %}
+    <footer class="fs-small">
+        <a href="http://www.F2000.FR">Copyright © 2013 F2000.FR - Tous droits réservés</a>
+    </footer>
+{% endblock %}

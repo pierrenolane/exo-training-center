@@ -1,0 +1,28 @@
+{{form_errors(form)}}
+<div class="row">
+    <div class="col-md-10">
+        {{ form_row(form.name) }}
+    </div>
+    <div class="col-md-2">
+        {{ form_row(form.private) }}
+    </div>
+</div>
+{{ form_row(form.client) }}
+{{ form_row(form.sponsor) }}
+{{ form_row(form.description) }}
+{{ form_row(form.location) }}
+<div class="input-daterange input-group" id="datepicker">
+    {{ form_row(form.startDate) }}
+    <span class="input-group-addon"> - </span>
+    {{ form_row(form.endDate) }}
+</div>
+{{form_widget(form)}}
+
+<script>
+    $('.input-daterange').datepicker({
+        format: "dd/mm/yyyy",
+        startView: 1,
+        language: "fr",
+        calendarWeeks: true
+    });
+</script>

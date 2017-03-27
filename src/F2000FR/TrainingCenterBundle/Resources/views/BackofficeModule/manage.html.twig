@@ -1,0 +1,123 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_settings.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    <h1 class="page-header">Modules de formation</h1>
+
+    <div id="navbar" class="navbar-collapse">
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <button id="build-module" type="button" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Générer les .zips
+                </button>
+                <button id="create-module" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Nouveau module
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            Modules de formation
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Catégorie</th>
+                        <th>Intitulé</th>
+                        <th>Description</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in modules %}
+                        <tr data-module-id="{{ module.id }}">
+                            <td>{{ module.reference }}</td>
+                            <td>{{ module.category.name }}</td>
+                            <td>{{ module.name }}</td>
+                            <td>{{ module.description | nl2br }}</td>
+                            <td><a class="show-module" href="#!">[Fiche]</a></td>
+                            <td>{{ completionRates[module.id] }} %</td>
+                            <td>
+                                {% if completionRates[module.id] == 100 %}
+                                    <span class="label label-success">Finalisé</span>
+                                {% elseif completionRates[module.id] >= 75 %}
+                                    <span class="label label-warning">En cours de finalisation</span>
+                                {% else %}
+                                    <span class="label label-danger">Brouillon</span>
+                                {% endif %}
+                            </td>
+                            <td class="actions">
+                                <span class="update-module glyphicon glyphicon-edit"></span>
+                                <span class="delete-module glyphicon glyphicon-remove-circle"></span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#build-module').on('click', function () {
+                if ($(this).hasClass('disabled')) {
+                    return false;
+                }
+                $(this).addClass('disabled');
+                $.get('{{ path('bo_module_build') }}')
+                        .done(function (content) {
+                            $('#build-module').removeClass('disabled btn-primary btn-success btn-danger');
+                            if (content.status == 'OK') {
+                                $('#build-module').addClass('btn-success');
+                            } else {
+                                $('#build-module').addClass('btn-danger');
+                            }
+                        });
+            });
+
+            $('#create-module').on('click', function () {
+                $.get('{{ path('bo_module_create') }}')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-module').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/module/update/' + $(this).closest('tr').data('module-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.delete-module').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/module/delete/' + $(this).closest('tr').data('module-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.show-module').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/show/module/' + $(this).closest('tr').data('module-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+        });
+    </script>
+{% endblock %}

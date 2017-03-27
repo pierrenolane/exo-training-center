@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}F2000.FR - Intranet formation{% endblock %}</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="robots" content="index,follow" />
+        <meta name="author" content="F2000.FR" />
+        <meta name="title" content="F2000.FR - Intranet formation" />
+
+        <!-- JQuery/JQueryUI -->
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="{{ asset('env/js/jquery/jquery.uniform.js') }}"></script>
+        <script src="{{ asset('env/js/jquery/jquery.chosen.js') }}"></script>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+        <!-- Bootstrap/Datepicker -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.standalone.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.fr.min.js"></script>
+
+        <!-- Bootstrap/Toggle -->
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+        <!-- Chart.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- PDF.js -->
+        <script src="{{ asset('env/js/pdf.js/pdf.js') }}"></script>
+        <script>
+            PDFJS.workerSrc = "{{ asset('env/js/pdf.js/pdf.worker.js') }}";
+        </script>
+
+        <!-- Crypto.js -->
+        <script src="{{ asset('env/js/crypto.js') }}"></script>
+        <script src="{{ asset('env/js/aes-json-format.js') }}"></script>
+
+        <link rel="stylesheet" type="text/css" href="{{ asset('env/css/global.css') }}" />
+        <script src = "{{ asset('env/js/global.js') }}" ></script>
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block header %}
+            <header>
+            </header>
+        {% endblock %}
+
+        {% block body %} {% endblock %}
+
+        {% block footer %}
+            <div style="padding-bottom: 50px;"></div>
+            <footer class="navbar-fixed-bottom fs-small">
+                <a href="http://www.F2000.FR" target="_blank">
+                    Copyright © 2013 F2000.FR - Tous droits réservés
+                </a>
+            </footer>
+        {% endblock %}
+
+        <div class="modal fade" id="modal-default" tabindex="-1" role="dialog"></div>
+        <div class="modal fade" id="modal-module" tabindex="-1" role="dialog"></div>
+        <div class="modal fade" id="modal-quizz" tabindex="-1" role="dialog"></div>
+
+
+        <script>
+            $(document).ready(function () {
+                $('#btn-user-account').on('click', function () {
+                    $.get('{{ path('user_account') }}')
+                            .done(function (content) {
+                                $('#modal-default').html(content).modal();
+                            });
+                });
+                $('#btn-user-cv').on('click', function () {
+                    $.get('{{ path('user_cv', {'id' : 'null'}) }}')
+                            .done(function (content) {
+                                $('#modal-default').html(content).modal();
+                            });
+                });
+            });
+        </script>
+    </body>
+</html>

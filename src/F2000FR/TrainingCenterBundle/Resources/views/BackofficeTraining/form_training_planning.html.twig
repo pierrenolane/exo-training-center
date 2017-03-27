@@ -1,0 +1,215 @@
+<div class="row">
+    <div class="col-md-3">
+        <div id="module-list-all" class="drop-zone"
+             style="border:1px solid black;">
+            <div class="module-list-header">Liste des modules</div>
+            {% for category in categories if category.parent is null %}
+                {% include 'F2000FRTrainingCenterBundle:BackofficeTraining:showCategoryBlock.html.twig' with {'categories': categories, 'category': category, 'level': 0} %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div id="planning-container">
+            {{ render(controller('F2000FRTrainingCenterBundle:Partial:trainingPlanning', {'id': training.id})) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    var gDay, gPeriod = null;
+
+    function flashy(object) {
+        $(object).fadeTo(400, 0.5).fadeTo(400, 1);
+    }
+
+    function onDragStart(event, ui) {
+        var oModule = ui.helper;
+        var oHalfPart = oModule.closest('.day-halfpart');
+        if (oHalfPart) {
+            gDay = oHalfPart.data('day');
+            gPeriod = oHalfPart.data('period');
+        }
+    }
+
+    function onDragStop(event, ui) {
+        var oModule = ui.helper;
+        var oHalfPart = oModule.closest('.day-halfpart');
+
+        var idTraining = $('.planning').data('training-id');
+        var idModule = oModule.data('module-id');
+        var day = oHalfPart.data('day');
+        var period = oHalfPart.data('period');
+
+        if (idTraining && idModule && day && period && (day !== gDay || period !== gPeriod)) {
+            var url = null;
+            var data = {
+                day: day,
+                period: period
+            };
+
+            var idCalendarTM = oModule.data('calendar-tm-id');
+            if (idCalendarTM) {
+                console.log('Ready to update ' + idCalendarTM + ' ' + idModule + ' ' + day + ' ' + period);
+
+                url = '{{ path('bo_training_update_calendar_tm') }}';
+                data['idCalendarTM'] = idCalendarTM;
+            } else {
+                console.log('Ready to create ' + idModule + ' ' + day + ' ' + period);
+
+                url = '{{ path('bo_training_create_calendar_tm') }}';
+                data['idTraining'] = idTraining;
+                data['idModule'] = idModule;
+            }
+
+            var flashInterval = setInterval(function () {
+                flashy(oModule);
+            }, 100);
+            $.post(url, data)
+                    .done(function (content) {
+                        clearInterval(flashInterval);
+
+                        if (content.status === 'OK') {
+                            oHalfPart.removeClass('off-day');
+
+                            oModule.data('calendar-tm-id', content.id);
+                            oModule.addClass(content.restricted ? 'btn-danger' : 'btn-success');
+                        }
+                    });
+        }
+
+        connectToCalendarEvent()
+    }
+
+    function onDropZone(event, ui) {
+        var idCalendarTM = ui.draggable.data('calendar-tm-id');
+        if (idCalendarTM) {
+            $.post(
+                    '{{ path('bo_training_delete_calendar_tm') }}',
+                    {
+                        idCalendarTM: idCalendarTM
+                    }
+            )
+                    .done(function (content) {
+                        if (content.status === 'OK') {
+                            ui.draggable.remove();
+                        }
+                    });
+        }
+    }
+
+    function onAddOffDay(object) {
+        var idTraining = $('.planning').data('training-id');
+
+        var oHalfPart = $(object).closest('.day-halfpart');
+        var day = oHalfPart.data('day');
+        var period = oHalfPart.data('period');
+
+        if (idTraining && day && period) {
+            $.post(
+                    '{{ path('bo_training_create_calendar_offday') }}',
+                    {
+                        idTraining: idTraining,
+                        day: day,
+                        period: period
+                    }
+            )
+                    .done(function (content) {
+                        if (content.status === 'OK') {
+                            oHalfPart.addClass('off-day');
+                            oHalfPart.find('.module').remove();
+                        }
+                    });
+        }
+    }
+
+    function onRemOffDay(object) {
+        var idTraining = $('.planning').data('training-id');
+
+        var oHalfPart = $(object).closest('.day-halfpart');
+        var day = oHalfPart.data('day');
+        var period = oHalfPart.data('period');
+
+        if (idTraining && day && period) {
+            $.post(
+                    '{{ path('bo_training_delete_calendar_offday') }}',
+                    {
+                        idTraining: idTraining,
+                        day: day,
+                        period: period
+                    }
+            )
+                    .done(function (content) {
+                        if (content.status === 'OK') {
+                            oHalfPart.removeClass('off-day');
+                        }
+                    });
+        }
+    }
+
+    function connectToCalendarEvent() {
+        $('.planning .module-list .module').draggable({
+            zIndex: 100,
+            revert: "invalid",
+            connectToSortable: ".module-list",
+            cursor: "move",
+            containment: ".modal-dialog",
+            cursorAt: {top: 5, left: 50},
+            start: function (event, ui) {
+                onDragStart(event, ui);
+            },
+            stop: function (event, ui) {
+                onDragStop(event, ui);
+            },
+        });
+        $('.planning .module-list').sortable({
+            revert: true
+        });
+    }
+
+    $(document).ready(function () {
+        $('#module-list-all .module').draggable({
+            zIndex: 100,
+            helper: "clone",
+            revert: "invalid",
+            connectToSortable: ".module-list",
+            cursor: "move",
+            containment: ".modal-dialog",
+            cursorAt: {top: 5, left: 100},
+            start: function (event, ui) {
+                onDragStart(event, ui);
+            },
+            stop: function (event, ui) {
+                onDragStop(event, ui);
+            },
+        });
+        $('.drop-zone').droppable({
+            accept: ".planning .module-list .module",
+            drop: function (event, ui) {
+                onDropZone(event, ui);
+            }
+        });
+        $('ul, li').disableSelection();
+
+        $('#planning-container').on({
+            mouseenter: function () {
+                if ($(this).hasClass('off-day')) {
+                    $(this).find('.glyphicon-remove').show();
+                } else {
+                    $(this).find('.glyphicon-ban-circle').show();
+                }
+            },
+            mouseleave: function () {
+                $(this).find('.glyphicon').hide();
+            }
+        }, '.planning .day.active .day-halfpart');
+
+        $('#planning-container').on('click', '.glyphicon-remove', function () {
+            onRemOffDay(this);
+        });
+        $('#planning-container').on('click', '.glyphicon-ban-circle', function () {
+            onAddOffDay(this);
+        });
+
+        connectToCalendarEvent();
+    });
+</script>

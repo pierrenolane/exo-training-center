@@ -16,7 +16,7 @@
 !var/sessions/.gitkeep
 
 # Parameters
-/app/config/parameters.yml
+/app/config/parameters*.yml
 /app/config/parameters.ini
 
 # Managed by Composer
@@ -46,3 +46,11 @@
 
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~
+
+# Netbeans data
+/nbproject
+
+# Private data
+/web/env/correction
+/web/env/pdf
+/web/test

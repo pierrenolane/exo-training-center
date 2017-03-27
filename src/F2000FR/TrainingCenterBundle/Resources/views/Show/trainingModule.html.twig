@@ -1,0 +1,56 @@
+{% extends "F2000FRTrainingCenterBundle:Show:module.html.twig" %}
+
+{% block addon %}
+    <div style="float:right;">
+        {% if user.role == constant('ROLE_ADMIN', user) %}
+            <input type="checkbox" {% if trainingModule.restricted %}checked{% endif %} data-toggle="toggle">
+
+            <script>
+                $(document).ready(function () {
+                    $('#module-view-desc input[type=checkbox]')
+                            .bootstrapToggle({
+                                on: 'Corrigés verrouillés',
+                                off: 'Corrigés disponibles',
+                                onstyle: 'danger',
+                                offstyle: 'success',
+                                width: 185,
+                                size: 'small',
+                            })
+                            .on('change', function () {
+                                $.post('{{ path('bo_training_update_tm_status') }}', {
+                                    idTrainingModule: '{{ trainingModule.id }}',
+                                    restricted: $(this).prop('checked') ? 1 : 0,
+                                }).done(function () {
+                                    // refresh calendar
+                                    if ($('#planning-container').length > 0) {
+                                        var page = $('#planning-container .planning-actions').data('current-page');
+                                        $.get('{{app.request.getBaseURL()}}/partial/training-planning/{{ trainingModule.training.id }}/' + page)
+                                                .done(function (content) {
+                                                    $('#planning-container').html(content);
+
+                                                    if (typeof connectToCalendarEvent == 'function') {
+                                                        connectToCalendarEvent()
+                                                    }
+                                                });
+                                    }
+
+                                    // refresh calendar week
+                                    if ($('#planning-week').length > 0) {
+                                        $.get('{{app.request.getBaseURL()}}/partial/training-planning-week/{{ trainingModule.training.id }}')
+                                                .done(function (content) {
+                                                    $('#planning-week').html(content);
+                                                });
+                                    }
+                                });
+                            });
+                });
+            </script>
+        {% else %}
+            {% if trainingModule.restricted %}
+                <span class="label label-danger">Corrigés verrouillés</span>
+            {% else %}
+                <span class="label label-success">Corrigés disponibles</span>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

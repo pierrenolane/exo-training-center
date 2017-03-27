@@ -1,0 +1,102 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_settings.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    <h1 class="page-header">Utilisateurs</h1>
+
+    <div id="navbar" class="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <button id="create-user" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Nouvel utilisateur
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Utilisateurs</div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom/Prénom</th>
+                        <th>Email</th>
+                        <th>CV</th>
+                        <th>Commentaire</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr data-user-id="{{ user.id }}">
+                            <td>{{ user.login }}</td>
+                            <td>
+                                {% if user.role == constant('ROLE_STUDENT', user) %}
+                                    <span class="glyphicon glyphicon-user" title="User"></span>
+                                {% elseif user.role == constant('ROLE_MANAGER', user) %}
+                                    <span class="glyphicon glyphicon-eye-open" title="Manager"></span>
+                                {% elseif user.role == constant('ROLE_ADMIN', user) %}
+                                    <span class="glyphicon glyphicon-education" title="Admin"></span>
+                                {% endif %}
+                                {{ user.name }}
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>@TODO CV-thèque</td>
+                            <td>{{ user.comment | nl2br }}</td>
+                            <td>
+                                {% if user.status == constant('STATUS_ACTIVE', user) %}
+                                    <span class="label label-success">Actif</span>
+                                {% elseif user.status == constant('STATUS_RESIGNING', user) %}
+                                    <span class="label label-danger">Démissionnaire</span>
+                                {% elseif user.status == constant('STATUS_INACTIVE', user) %}
+                                    <span class="label label-warning">Inactif</span>
+                                {% elseif user.status == constant('STATUS_DISABLED', user) %}
+                                    <span class="label label-default">Désactivé</span>
+                                {% endif %}
+                            </td>
+                            <td class="actions">
+                                <span class="update-user glyphicon glyphicon-edit"></span>
+                                <span class="delete-user glyphicon glyphicon-remove-circle"></span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#create-user').on('click', function () {
+                $.get('{{ path('bo_user_create') }}')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-user').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/user/update/' + $(this).closest('tr').data('user-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.delete-user').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/user/delete/' + $(this).closest('tr').data('user-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,67 @@
+<div id="pdf-viewer"></div>
+
+<script>
+    var pdfDoc = null, scale = 1;
+
+    $(document).ready(function () {
+        var cryptedUrl = '{{ cryptedPdfPath | raw }}';
+        if (cryptedUrl) {
+            var url = JSON.parse(
+                    CryptoJS.AES.decrypt(
+                            cryptedUrl,
+                            '{{ ENCRYPTION_KEY }}',
+                            {format: CryptoJSAesJson}).toString(CryptoJS.enc.Utf8)
+                    );
+            loadPdf(url);
+        } else {
+            $('#pdf-viewer').hide();
+        }
+    });
+
+    /**
+     * Asynchronously downloads PDF
+     * @param url Pdf path
+     */
+    function loadPdf(url) {
+        PDFJS.getDocument(url).then(function (pdfDoc_) {
+            pdfDoc = pdfDoc_;
+
+            // Initial/first page rendering
+            renderAllPages();
+        });
+    }
+
+    /**
+     * Get each page info from document and render page.
+     */
+    function renderAllPages() {
+        for (var i = 1; i <= pdfDoc.numPages; i++) {
+            renderPage(i);
+        }
+    }
+
+    /**
+     * Get page info from document, resize canvas accordingly, and render page
+     * @param num Page number
+     */
+    function renderPage(num) {
+        // Using promise to fetch the page
+        pdfDoc.getPage(num).then(function (page) {
+            // Create canvas element dynamically
+            var canvasId = 'pdf-viewer-' + num;
+            $('#pdf-viewer').append($('<canvas/>', {'id': canvasId}));
+
+            var canvas = document.getElementById(canvasId);
+            var context = canvas.getContext('2d');
+            var viewport = page.getViewport(scale);
+
+            // Render page
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            page.render({
+                canvasContext: context,
+                viewport: viewport
+            });
+        });
+    }
+</script>

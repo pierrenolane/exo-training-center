@@ -1,0 +1,41 @@
+{% include 'F2000FRTrainingCenterBundle:Partial:_trainingPlanning.html.twig' %}
+
+{% if hasPrevDays or hasNextDays %}
+    <div class="row planning-actions" data-current-page="{{ page }}">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-1">
+            <a href="#!" class="change-month btn btn-sm btn-primary
+               {% if not hasPrevDays %}disabled{% endif %}"
+               role="button" data-page="{{ page-1 }}">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+            </a>
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-1">
+            <a href="#!" class="change-month btn btn-sm btn-primary
+               {% if not hasNextDays %}disabled{% endif %}"
+               role="button" data-page="{{ page+1 }}">
+                <span class="glyphicon glyphicon-arrow-right"></span>
+            </a>
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+        $('.change-month').on('click', function () {
+            $.get('{{app.request.getBaseURL()}}/partial/training-planning/{{ training.id }}/' + $(this).data('page'))
+                    .done(function (content) {
+                        $('#planning-container').html(content);
+
+                        if (typeof connectToCalendarEvent == 'function') {
+                            connectToCalendarEvent()
+                        }
+                    });
+        });
+    });
+</script>

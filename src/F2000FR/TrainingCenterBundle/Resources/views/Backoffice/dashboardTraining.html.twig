@@ -1,0 +1,82 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_dashboard.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    {{ render(controller('F2000FRTrainingCenterBundle:Partial:trainingOverview', {'id': training.id})) }}
+
+    <h2 class="sub-header">Stagiaires</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Stagiaire</th>
+                    <th>Niveau moyen</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in training.users if user.role != constant('ROLE_MANAGER', user) %}
+                    <tr data-user-id="{{ user.id }}">
+                        <td>{{ user.name }}</td>
+                        <td>{{ scoreInfo(quizzInfo['U'][user.id]['globalRatio'] * 5) }}</td>
+                        <td>{{ user.comment }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if training.trainingModules is not empty %}
+        <h2 class="sub-header">Stagiaires / Modules</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Module</th>
+                        <th>Niveau moyen</th>
+                            {% for user in training.users if user.role != constant('ROLE_MANAGER', user) %}
+                            <th class="col-centered">
+                                {{ user.lastName|upper }}
+                                <br />
+                                {{ user.firstName }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainingModule in training.trainingModules %}
+                        {% set hasQuizz = trainingModule.module.quizz %}
+                        <tr>
+                            <td>{{ trainingModule.calendarTMs[0] is defined ? trainingModule.calendarTMs[0].day | date('d/m') : '-' }}</td>
+                            <td>{{ trainingModule.module.reference }} <br />
+                                {{ trainingModule.module.name }}</td>
+                            <td>
+                                {% if hasQuizz %}
+                                    {{ scoreInfo(quizzInfo['TM'][trainingModule.id]['globalRatio'] * 5) }}
+                                {% else %}
+                                    {{ scoreInfo() }}
+                                {% endif %}
+                            </td>
+                            {% for user in training.users if user.role == constant('ROLE_STUDENT', user) %}
+                                {% set userHasAnswered = quizzInfo['TM'][trainingModule.id][user.id] is defined %}
+                                <td class="col-centered">
+                                    {% if userHasAnswered %}
+                                        {% set user_rank = quizzInfo['TM'][trainingModule.id][user.id].scoreRatio * 5 %}
+
+                                        {{ scoreInfo(user_rank, false) }}
+                                    {% else %}
+                                        {{ scoreInfo() }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

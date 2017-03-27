@@ -1,0 +1,36 @@
+{{form_errors(form) }}
+
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.reference) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.category) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.name) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.description) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.keypoints) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.ressources) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.privateContent) }}
+    </div>
+</div>
+{{form_widget(form)}}

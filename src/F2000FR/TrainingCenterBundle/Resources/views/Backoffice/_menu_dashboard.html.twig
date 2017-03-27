@@ -1,0 +1,33 @@
+<ul class="nav nav-sidebar">
+    <li class="{% if app.request.attributes.get('_route') == 'bo_dashboard' %}active{% endif %}">
+        <a href="{{ path('bo_dashboard') }}">
+            <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>Vue d'ensemble
+        </a>
+    </li>
+</ul>
+
+Actions de formation
+<ul class="nav nav-sidebar">
+    {% for item in trainings if not item.isClose %}
+        <li>
+            <a href="{{ path('bo_dashboard_training', {id : item.id}) }}">
+                {% if training is defined and training.id == item.id %}<strong>{% endif %}
+                    {{ item.getShortName }}
+                    {% if training is defined and training.id == item.id %}</strong>{% endif %}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+Archives
+<ul class="nav nav-sidebar">
+    {% for item in trainings if item.isClose %}
+        <li>
+            <a href="{{ path('bo_dashboard_training', {id : item.id}) }}">
+                {% if training is defined and training.id == item.id %}<strong>{% endif %}
+                    {{ item.getShortName }}
+                    {% if training is defined and training.id == item.id %}</strong>{% endif %}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

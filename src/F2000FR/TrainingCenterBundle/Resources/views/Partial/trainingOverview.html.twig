@@ -1,0 +1,96 @@
+<h1 class="page-header">{{ training.getFullName }}</h1>
+<div class="row">
+    <div class="col-md-6">
+        <strong>Titre de la formation</strong> : {{ training.name }}<br />
+        <strong>Client</strong> : {{ training.client }}<br />
+        <strong>Partenaire</strong> : {{ training.sponsor }}<br />
+        <br />
+        <strong>Infos complémentaire</strong> :<br />
+        <div class="js-enable-email">
+            {{ training.description | nl2br }}
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-5">
+                <strong>Progression de la formation</strong> :
+            </div>
+            <div class="col-md-7">
+                <div class="progress">
+                    {% set percent = (training.daysStats['passed'] / (training.daysStats['passed'] + training.daysStats['remaining'])) * 100 %}
+                    <div class="progress-bar progress-bar-success progress-bar-striped"
+                         role="progressbar"
+                         aria-valuenow="{{ training.daysStats['passed'] }}"
+                         aria-valuemin="0"
+                         aria-valuemax="{{ training.daysStats['passed'] + training.daysStats['remaining'] }}"
+                         style="min-width: 2em;width:{{percent}}%;">
+                        {{ percent|number_format }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <strong>Emplacement de la formation</strong> :<br />
+        {{ training.location }}<br /><br />
+        <div id="training-map" style="height:300px;"></div>
+    </div>
+</div>
+<br />
+<strong>Semaine actuelle / Dates de la formation : {{ training.startDate | date('d/m/Y') }}-{{ training.endDate | date('d/m/Y') }}</strong>
+<div id="planning-week">
+    {% include 'F2000FRTrainingCenterBundle:Partial:_trainingPlanning.html.twig' %}
+</div>
+
+{% if hasPrevDays or hasNextDays %}
+    <div class="row planning-actions">
+        <div class="col-md-10">
+        </div>
+        <div class="col-md-2">
+            <a href="#!" class="btn btn-sm btn-primary" id="show-full-planning"
+               role="button" data-training-id="{{ training.id }}">
+                Voir le planning complet
+            </a>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    function initMap() {
+        geocoder = new google.maps.Geocoder();
+        if (geocoder) {
+            address = '{{ training.location }}';
+            console.log(address);
+            geocoder.geocode({'address': address}, function (results, status) {
+                console.log(results);
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                        // Create a map object and specify the DOM element for display.
+                        var map = new google.maps.Map(document.getElementById('training-map'), {
+                            center: results[0].geometry.location,
+                            scrollwheel: false,
+                            zoom: 14
+                        });
+
+                        var marker = new google.maps.Marker({
+                            position: results[0].geometry.location,
+                            map: map,
+                            title: address
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        $('#show-full-planning').on('click', function () {
+            $.get('{{app.request.getBaseURL()}}/show/training-planning/' + $(this).data('training-id'))
+                    .done(function (content) {
+                        $('#modal-default').html(content).modal();
+                    });
+        });
+    });
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ API_KEY_GOOGLEMAPS }}&callback=initMap"
+async defer></script>

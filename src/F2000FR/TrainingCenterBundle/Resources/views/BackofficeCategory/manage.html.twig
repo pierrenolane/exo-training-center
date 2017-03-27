@@ -1,0 +1,69 @@
+{% extends 'F2000FRTrainingCenterBundle:Backoffice:_base.html.twig' %}
+
+{% block bo_sidebar %}
+    {% include 'F2000FRTrainingCenterBundle:Backoffice:_menu_settings.html.twig' %}
+{% endblock %}
+
+{% block bo_body %}
+    <h1 class="page-header">Catégories</h1>
+
+    <div id="navbar" class="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <button id="create-category" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Nouvelle catégorie
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <br />
+
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Catégories</div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Catégorie</th>
+                        <th>Nombre de modules</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories if category.parent is null %}
+                        {% include 'F2000FRTrainingCenterBundle:Backoffice:showCategoryTr.html.twig' with {'categories': categories, 'category': category, 'level' : 0} %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#create-category').on('click', function () {
+                $.get('{{ path('bo_category_create') }}')
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.update-category').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/category/update/' + $(this).closest('tr').data('category-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+
+            $('.delete-category').on('click', function () {
+                $.get('{{app.request.getBaseURL()}}/backoffice/category/delete/' + $(this).closest('tr').data('category-id'))
+                        .done(function (content) {
+                            $('#modal-default').html(content).modal();
+                        });
+            });
+        });
+    </script>
+{% endblock %}

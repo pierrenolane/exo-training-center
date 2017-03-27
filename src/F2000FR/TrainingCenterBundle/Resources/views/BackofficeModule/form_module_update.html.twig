@@ -1,0 +1,195 @@
+{{form_errors(formModule) }}
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="row">
+            <div class="col-md-6">
+                {{ form_row(formModule.reference) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(formModule.category) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_row(formModule.name) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_row(formModule.description) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_row(formModule.keypoints) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_row(formModule.ressources) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                {{ form_row(formModule.privateContent) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a href="#fiche" data-toggle="tab">Document de synthèse</a>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    Exercices ({{ module.exercices | length }}) <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for exercice in module.exercices %}
+                        <li>
+                            <a href="#exo-{{ exercice.id }}" data-toggle="tab">{{ exercice.reference ~ ' - ' ~ exercice.name }}</a>
+                        </li>
+                    {% endfor %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#exo-new" data-toggle="tab">Nouvel exercice</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#quizz" data-toggle="tab">Quizz</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#exo-new" data-toggle="tab">Nouveau quizz</a></li>
+                </ul>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="fiche" class="tab-pane fade in active">
+                {{ render(controller('F2000FRTrainingCenterBundle:Partial:modulePdfViewer', {'id' : module.id})) }}
+            </div>
+            <div id="exo-new" class="tab-pane fade">
+                {% include 'F2000FRTrainingCenterBundle:BackofficeModule:form_exercice.html.twig' with {'form' : formExercices.new, 'type' : 'CREATE'} %}
+            </div>
+            {% for exercice in module.exercices %}
+                <div id="exo-{{ exercice.id }}" class="exo tab-pane fade" data-exercice-id="{{ exercice.id }}">
+                    {% include 'F2000FRTrainingCenterBundle:BackofficeModule:form_exercice.html.twig' with {'form' : formExercices[exercice.reference], 'type' : 'UPDATE'} %}
+                </div>
+            {% endfor %}
+            <div id="quizz" class="tab-pane fade">
+                {% include 'F2000FRQuizzBundle:Default:form_quizz.html.twig' with { 'form': formQuizz } %}
+                <br />
+                <div class="row actions">
+                    <div class="col-md-12">
+                        <span id="btn-quizz-create" class="btn btn-primary">
+                            Créer/Modifier
+                        </span>
+                        <span id="btn-quizz-delete" class="btn btn-danger
+                              {% if module.quizz is null %}disabled{% endif %}">
+                            Supprimer
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{form_widget(formModule)}}
+
+<script>
+    var idModule = '{{ module.id }}';
+    var idQuizz = '{{ (module.quizz is not null) ? module.quizz.id : '' }}';
+
+    $(document).ready(function () {
+        $('#exo-new .btn-primary').on('click', function () {
+            var parent = $('#exo-new');
+            updateExercice(parent);
+        });
+
+        $('.exo .btn-primary').on('click', function () {
+            var parent = $(this).parents('.exo');
+            updateExercice(parent);
+        });
+
+        $('.exo .btn-danger').on('click', function () {
+            var idExercice = $(this).parents('.exo').data('exercice-id');
+            deleteExercice(idExercice);
+        });
+
+        $('#btn-quizz-create').on('click', function () {
+            updateQuizz();
+        });
+        $('#btn-quizz-delete').on('click', function () {
+            if (idQuizz) {
+                deleteQuizz(idQuizz);
+            }
+        });
+    });
+
+    function updateExercice(parent) {
+        var idExercice = parent.data('exercice-id');
+
+        var reference = parent.find('#exercice_reference').val();
+        var name = parent.find('#exercice_name').val();
+        var description = parent.find('#exercice_description').val();
+
+        if (reference && name && description) {
+            data = $(parent).find('input, textarea').serialize();
+            data += '&idModule=' + idModule;
+            data += '&idExercice=' + idExercice;
+
+            url = '{{ path('bo_module_create_exercice') }}';
+            if (idExercice) {
+                url = '{{ path('bo_module_update_exercice') }}';
+                data['idExercice'] = idExercice;
+            }
+
+            callAndRefresh(url, data);
+        } else {
+            alert('Veuillez remplir tous les champs');
+        }
+    }
+
+    function updateQuizz() {
+        data = $('#quizz input').serialize();
+        data += '&idModule=' + idModule;
+        data += '&idQuizz=' + idQuizz;
+
+        url = '{{ path('bo_module_create_quizz') }}';
+        if (idQuizz) {
+            url = '{{ path('bo_module_update_quizz') }}';
+        }
+
+        callAndRefresh(url, data);
+    }
+
+    function deleteExercice(idExercice) {
+        var data = {
+            idExercice: idExercice,
+        };
+        var url = '{{ path('bo_module_delete_exercice') }}';
+
+        callAndRefresh(url, data);
+    }
+
+    function deleteQuizz(idQuizz) {
+        var data = {
+            idModule: idModule,
+            idQuizz: idQuizz,
+        };
+        var url = '{{ path('bo_module_delete_quizz') }}';
+
+        callAndRefresh(url, data);
+    }
+
+    function callAndRefresh(url, data) {
+        $.post(url, data).done(
+                function (content) {
+                    if (content.status === 'OK') {
+                        $.get('{{app.request.getBaseURL()}}/backoffice/module/update/' + idModule)
+                                .done(function (content) {
+                                    $('#modal-default').html(content);
+                                });
+                    }
+                }
+        );
+    }
+</script>

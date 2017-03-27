@@ -1,0 +1,31 @@
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.reference) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.name) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.description) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.howTo) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{ form_row(form.clue) }}
+    </div>
+</div>
+{{form_widget(form)}}
+
+<div class="row actions">
+    <div class="col-md-12">
+        <span class="btn btn-primary">Créer/Modifier</span>
+        <span class="btn btn-danger {% if type == 'CREATE' %}disabled{% endif %}">Supprimer</span>
+    </div>
+</div>

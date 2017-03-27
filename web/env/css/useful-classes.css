@@ -1,0 +1,40 @@
+.fs-small {
+    font-size:11px;
+}
+
+.left{
+    float:left;
+}
+.right{
+    float:right;
+}
+
+.white-zone, .grey-zone {
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+}
+.white-zone {
+    background: white;
+}
+.grey-zone {
+    background: #f4f5f3;
+}
+.black-zone {
+    background: black;
+    color:white;
+}
+
+.navbar-fixed-bottom {
+    position: fixed;
+    margin: 0;
+    line-height:50px;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    height:50px;
+    background-color:#f5f5f5;
+}
+.navbar-fixed-bottom {
+    bottom: 0px;
+}

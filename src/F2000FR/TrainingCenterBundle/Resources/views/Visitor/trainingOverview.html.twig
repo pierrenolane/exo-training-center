@@ -1,0 +1,59 @@
+{% extends "F2000FRTrainingCenterBundle:Visitor:_base.html.twig" %}
+
+{% block title %}F2000.FR - Intranet formation - Dashboard{% endblock %}
+
+{% block user_body %}
+    <h1 class="page-header">{{ training.getFullName }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <strong>Titre de la formation</strong> : {{ training.name }}<br />
+            <strong>Client</strong> : {{ training.client }}<br />
+            <strong>Partenaire</strong> : {{ training.sponsor }}<br />
+            <br />
+            <strong>Infos complémentaire</strong> :<br />
+            <div class="js-enable-email">
+                {{ training.description | nl2br }}
+            </div>
+            <br />
+            <strong>Dates de la formation : {{ training.startDate | date('d/m/Y') }}-{{ training.endDate | date('d/m/Y') }}</strong>
+        </div>
+        <div class="col-md-6">
+            <strong>Emplacement de la formation</strong> :<br />
+            {{ training.location }}<br /><br />
+            <div id="training-map" style="height:300px;"></div>
+        </div>
+    </div>
+    <br />
+
+    <script>
+        function initMap() {
+            geocoder = new google.maps.Geocoder();
+            if (geocoder) {
+                address = '{{ training.location }}';
+                console.log(address);
+                geocoder.geocode({'address': address}, function (results, status) {
+                    console.log(results);
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (status != google.maps.GeocoderStatus.ZERO_RESULTS) {
+                            // Create a map object and specify the DOM element for display.
+                            var map = new google.maps.Map(document.getElementById('training-map'), {
+                                center: results[0].geometry.location,
+                                scrollwheel: false,
+                                zoom: 14
+                            });
+
+                            var marker = new google.maps.Marker({
+                                position: results[0].geometry.location,
+                                map: map,
+                                title: address
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ API_KEY_GOOGLEMAPS }}&callback=initMap"
+    async defer></script>
+{% endblock %}

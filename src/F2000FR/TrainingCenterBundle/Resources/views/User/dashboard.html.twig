@@ -1,0 +1,90 @@
+{% extends "F2000FRTrainingCenterBundle:User:_base.html.twig" %}
+
+{% block title %}F2000.FR - Intranet formation - Dashboard{% endblock %}
+
+{% block user_body %}
+    {% if training %}
+        {{ render(controller('F2000FRTrainingCenterBundle:Partial:trainingOverview', {'id': training.id})) }}
+
+        {% if training.trainingModules is not empty %}
+            <h2 class="sub-header">Suivi de la progression</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Module</th>
+                            <th>Niveau</th>
+                            <th>Module</th>
+                            <th>Quizz</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trainingModule in training.trainingModules %}
+                            {% set hasQuizz = trainingModule.module.quizz %}
+                            {% set userHasAnswered = userQuizzs[trainingModule.id] is defined %}
+                            <tr>
+                                <td>{{ trainingModule.calendarTMs[0] is defined ? trainingModule.calendarTMs[0].day | date('d/m') : '-' }}</td>
+                                <td>
+                                    {{ trainingModule.module.reference }}
+                                    <br />
+                                    {{ trainingModule.module.name }}
+                                </td>
+                                <td>
+                                    {% if hasQuizz and userHasAnswered %}
+                                        {% set user_rank = userQuizzs[trainingModule.id].scoreRatio * 5 %}
+
+                                        {{ scoreInfo(user_rank) }}
+                                    {% else %}
+                                        {{ scoreInfo() }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="btn btn-xs btn-primary show-module"
+                                          data-tm-id = "{{ trainingModule.id }}">
+                                        Voir la fiche du module
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if hasQuizz %}
+                                        {% set title = 'Démarrer le quizz' %}
+                                        {% set class = 'btn-primary' %}
+
+                                        {% if userHasAnswered %}
+                                            {% set title = 'Revoir vos réponses' %}
+                                            {% set class = 'btn-default' %}
+                                        {% endif %}
+
+                                        <span class="btn btn-xs {{ class }} show-quizz"
+                                              data-tm-id = "{{ trainingModule.id }}">
+                                            {{ title }}
+                                        </span>
+                                    {% else %}
+                                        <span class="label label-default">Pas de quizz disponible</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    $('span.show-module').on('click', function () {
+                        $.get('{{app.request.getBaseURL()}}/show/training-module/' + $(this).data('tm-id'))
+                                .done(function (content) {
+                                    $('#modal-module').html(content).modal();
+                                });
+                    });
+                    $('span.show-quizz').on('click', function () {
+                        $.get('{{app.request.getBaseURL()}}/show/training-module/' + $(this).data('tm-id') + '/quizz')
+                                .done(function (content) {
+                                    $('#modal-module').html(content).modal();
+                                });
+                    });
+                });
+            </script>
+        {% endif %}
+    {% endif %}
+{% endblock %}

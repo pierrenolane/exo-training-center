@@ -1,0 +1,51 @@
+<div id="quizz-result" class="scroll-y-450">
+    {% set delay = (resultQuizz.endDate | date('U')) - (resultQuizz.startDate | date('U')) %}
+
+    <h3>Badge obtenu : {{ scoreInfo(resultQuizz.scoreRatio * 5) }}</h3>
+    <em>
+        {% if delay <= 60 %}
+            Quizz réalisé en {{ delay }} seconde(s)
+        {% else %}
+            {% set delay_s = (delay % 60) %}
+            {% set delay_m = ((delay-delay_s)/60) %}
+            Quizz réalisé en {{ delay_m }} minute(s) et {{ delay_s }} seconde(s)
+        {% endif %}
+    </em>
+
+    {% for resultQuestion in resultQuizz.resultQuestions %}
+        {% set isQValid = true %}
+        {% for resultResponse in resultQuestion.resultResponses %}
+            {% set isRValid = resultResponse.response.valid %}
+            {% set isRChecked = resultResponse.checked %}
+
+            {% set isQValid = (isQValid and (isRValid == isRChecked)) %}
+        {% endfor %}
+
+        {% set qClass = isQValid ? 'label-success' : 'label-danger' %}
+
+        <h4><span class="label {{ qClass }}">Q{{ loop.index }} : {{ resultQuestion.question.name }}</span></h4>
+        <ul>
+            {% for resultResponse in resultQuestion.resultResponses %}
+                {% set isRValid = resultResponse.response.valid %}
+                {% set isRChecked = resultResponse.checked %}
+
+                {% if isRValid %}
+                    {% set rClass = isRChecked ? 'label-success' : 'label-warning' %}
+                {% else %}
+                    {% set rClass = isRChecked ? 'label-danger' : 'label-default' %}
+                {% endif %}
+                <li>
+                    <span class="label {{ rClass }}">{{ resultResponse.response.name }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+</div>
+<br /><br />
+<em>
+    Légende :
+    <span class="label label-success">Rép. correcte et validée</span>
+    <span class="label label-warning">Rép. correcte mais non validée</span>
+    <span class="label label-danger">Rép. incorrecte mais validée</span>
+    <span class="label label-default">Rép. incorrecte et non validée</span>
+</em>

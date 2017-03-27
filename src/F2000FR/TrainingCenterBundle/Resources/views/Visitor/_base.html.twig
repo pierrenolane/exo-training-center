@@ -1,0 +1,39 @@
+{% extends "F2000FRTrainingCenterBundle::layout.html.twig" %}
+
+{% block title %}F2000.FR - Intranet formation - Visitor{% endblock %}
+
+{% block header %}
+    <header>
+        <nav class="navbar navbar-inverse navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Portail formation - Visiteur</a>
+                </div>
+
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="{{ path('login') }}" role="button">
+                                <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span>
+                                Se connecter
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {% block user_body %}
+        {% endblock %}
+    </div>
+{% endblock %}

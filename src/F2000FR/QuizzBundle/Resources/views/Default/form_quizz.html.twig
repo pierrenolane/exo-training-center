@@ -1,0 +1,55 @@
+{{ form_row(form.reference, {'value' : (form.reference.vars.value is empty) ? module.reference : form.reference.vars.value}) }}
+{{ form_row(form.name, {'value' : (form.name.vars.value is empty) ? module.name : form.name.vars.value}) }}
+
+{{ form_label(form.questions) }}
+<div id="quizz-create" class="scroll-y-450 add-padding-horiz">
+    <div id="question-fields-list"
+         data-prototype="
+         {% filter escape %}
+             {{ include('F2000FRQuizzBundle:Default:form_question.html.twig', { 'form': form.questions.vars.prototype }) }}
+         {% endfilter %}">
+        {% for question in form.questions %}
+            {{ include('F2000FRQuizzBundle:Default:form_question.html.twig', { 'form': question }) }}
+        {% endfor %}
+    </div>
+
+    <button id="add-another-question">Add question</button>
+    <br /><br />
+</div>
+{{ form_widget(form._token) }}
+
+<script>
+    $(document).ready(function () {
+        $('#quizz-create').on('click', '#add-another-question', function (e) {
+            e.preventDefault();
+
+            var questionList = $('#question-fields-list');
+            var count = $('.quizz-question').length;
+
+            // grab the prototype template
+            var newWidget = questionList.attr('data-prototype').replace(/__questionIdx__/g, count);
+
+            // create a new list element and add it to the list
+            questionList.append(newWidget);
+        });
+
+        $('#quizz-create').on('click', '.add-another-response', function (e) {
+            e.preventDefault();
+
+            var responseList = $($(this).data('ref-id'));
+            var count = responseList.find('.quizz-response').length;
+
+            // grab the prototype template
+            var newWidget = responseList.attr('data-prototype').replace(/__responseIdx__/g, count);
+
+            // create a new list element and add it to the list
+            responseList.append(newWidget);
+        });
+
+        $('#quizz-create').on('click', '.delete-question, .delete-response', function (e) {
+            e.preventDefault();
+
+            $(this).parent().parent().parent().remove();
+        });
+    });
+</script>

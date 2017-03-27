@@ -1,0 +1,6 @@
+services:
+    app.twig_extension:
+        class: F2000FR\TrainingCenterBundle\Twig\AppExtension
+        public: false
+        tags:
+            - { name: twig.extension }

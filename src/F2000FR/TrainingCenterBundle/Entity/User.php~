@@ -1,0 +1,435 @@
+<?php
+
+namespace F2000FR\TrainingCenterBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * User
+ *
+ * @ORM\Table(name="f2000fr_trainingcenter_user")
+ * @ORM\Entity
+ */
+class User {
+
+    /**
+     * Roles
+     */
+    const ROLE_STUDENT = 1;
+    const ROLE_MANAGER = 2;
+    const ROLE_ADMIN = 3;
+
+    /**
+     * Statuses
+     */
+    const STATUS_ACTIVE = 1;
+    const STATUS_RESIGNING = 2;
+    const STATUS_INACTIVE = 3;
+    const STATUS_DISABLED = 4;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="login", type="string", length=50, unique=true)
+     */
+    private $login;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=100)
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="first_name", type="string", length=100)
+     */
+    private $firstName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="last_name", type="string", length=100)
+     */
+    private $lastName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=100, unique=true)
+     */
+    private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="comment", type="string", length=255, nullable=true)
+     */
+    private $comment;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="role", type="integer", length=1)
+     */
+    private $role;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="status", type="smallint")
+     */
+    private $status;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_date", type="datetime")
+     */
+    private $createdDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_date", type="datetime")
+     */
+    private $updatedDate;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Training", inversedBy="users")
+     * @ORM\JoinTable(name="f2000fr_trainingcenter_users_trainings")
+     */
+    private $trainings;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserTMQuizzResult", mappedBy="user")
+     */
+    private $TMQuizzResults;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CV", mappedBy="user")
+     */
+    private $cvs;
+
+    public function isAdmin() {
+        return ($this->role === self::ROLE_ADMIN);
+    }
+
+    public function verifAuth($sPassword) {
+        return ($this->password == $sPassword) && $this->status !== self::STATUS_DISABLED;
+    }
+
+    public function getName() {
+        return strtoupper($this->lastName) . ' ' . $this->firstName;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set login
+     *
+     * @param string $login
+     *
+     * @return User
+     */
+    public function setLogin($login) {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * Get login
+     *
+     * @return string
+     */
+    public function getLogin() {
+        return $this->login;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPassword($password) {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword() {
+        return $this->password;
+    }
+
+    /**
+     * Set firstName
+     *
+     * @param string $firstName
+     *
+     * @return User
+     */
+    public function setFirstName($firstName) {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    /**
+     * Get firstName
+     *
+     * @return string
+     */
+    public function getFirstName() {
+        return $this->firstName;
+    }
+
+    /**
+     * Set lastName
+     *
+     * @param string $lastName
+     *
+     * @return User
+     */
+    public function setLastName($lastName) {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * Get lastName
+     *
+     * @return string
+     */
+    public function getLastName() {
+        return $this->lastName;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return User
+     */
+    public function setEmail($email) {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail() {
+        return $this->email;
+    }
+
+    /**
+     * Set role
+     *
+     * @param integer $role
+     *
+     * @return User
+     */
+    public function setRole($role) {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return integer
+     */
+    public function getRole() {
+        return $this->role;
+    }
+
+    /**
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return User
+     */
+    public function setStatus($status) {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return integer
+     */
+    public function getStatus() {
+        return $this->status;
+    }
+
+    /**
+     * Set createdDate
+     *
+     * @param \DateTime $createdDate
+     *
+     * @return User
+     */
+    public function setCreatedDate($createdDate) {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    /**
+     * Get createdDate
+     *
+     * @return \DateTime
+     */
+    public function getCreatedDate() {
+        return $this->createdDate;
+    }
+
+    /**
+     * Set updatedDate
+     *
+     * @param \DateTime $updatedDate
+     *
+     * @return User
+     */
+    public function setUpdatedDate($updatedDate) {
+        $this->updatedDate = $updatedDate;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedDate
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedDate() {
+        return $this->updatedDate;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment
+     *
+     * @return User
+     */
+    public function setComment($comment) {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return string
+     */
+    public function getComment() {
+        return $this->comment;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->trainings = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add training
+     *
+     * @param \F2000FR\TrainingCenterBundle\Entity\Training $training
+     *
+     * @return User
+     */
+    public function addTraining(\F2000FR\TrainingCenterBundle\Entity\Training $training) {
+        $this->trainings[] = $training;
+
+        return $this;
+    }
+
+    /**
+     * Remove training
+     *
+     * @param \F2000FR\TrainingCenterBundle\Entity\Training $training
+     */
+    public function removeTraining(\F2000FR\TrainingCenterBundle\Entity\Training $training) {
+        $this->trainings->removeElement($training);
+    }
+
+    /**
+     * Get trainings
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTrainings() {
+        return $this->trainings;
+    }
+
+    /**
+     * Add tMQuizzResult
+     *
+     * @param \F2000FR\TrainingCenterBundle\Entity\UserTMQuizzResult $tMQuizzResult
+     *
+     * @return User
+     */
+    public function addTMQuizzResult(\F2000FR\TrainingCenterBundle\Entity\UserTMQuizzResult $tMQuizzResult) {
+        $this->TMQuizzResults[] = $tMQuizzResult;
+
+        return $this;
+    }
+
+    /**
+     * Remove tMQuizzResult
+     *
+     * @param \F2000FR\TrainingCenterBundle\Entity\UserTMQuizzResult $tMQuizzResult
+     */
+    public function removeTMQuizzResult(\F2000FR\TrainingCenterBundle\Entity\UserTMQuizzResult $tMQuizzResult) {
+        $this->TMQuizzResults->removeElement($tMQuizzResult);
+    }
+
+    /**
+     * Get tMQuizzResults
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTMQuizzResults() {
+        return $this->TMQuizzResults;
+    }
+
+}

@@ -1,0 +1,14 @@
+<div style="margin-left:{{ level*5 }}px;">
+    <span class="module-category-header">{{ category.name }}</span>
+    <ul>
+        {% for module in category.modules %}
+            <li class="module" data-module-id="{{ module.id }}">
+                {{ module.name }}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% for subcategory in categories if subcategory.parent == category %}
+    {% include 'F2000FRTrainingCenterBundle:BackofficeTraining:showCategoryBlock.html.twig' with {'categories': categories, 'category': subcategory, 'level' : level+5 } %}
+{% endfor %}

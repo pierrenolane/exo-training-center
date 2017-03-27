@@ -1,0 +1,25 @@
+<div class="question-container">
+    <div class="row">
+        <div class="col-md-1">
+            <button type="button" class="delete-question btn btn-xs btn-danger">
+                <span class="glyphicon glyphicon-minus-sign"></span>
+            </button>
+        </div>
+        <div class="col-md-11">
+            {{ form_row(form.name) }}
+        </div>
+    </div>
+
+    <div class="add-padding-horiz">
+        <button class="add-another-response" data-ref-id="#response-fields-list-__questionIdx__">Add response</button>
+        <div id="response-fields-list-__questionIdx__"
+             data-prototype="
+             {% filter escape %}
+                 {{ include('F2000FRQuizzBundle:Default:form_response.html.twig', { 'form': form.responses.vars.prototype }) }}
+             {% endfilter %}">
+            {% for response in form.responses %}
+                {{ include('F2000FRQuizzBundle:Default:form_response.html.twig', { 'form': response }) }}
+            {% endfor %}
+        </div>
+    </div>
+</div>

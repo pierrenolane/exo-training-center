@@ -1,0 +1,61 @@
+{% extends "F2000FRTrainingCenterBundle::layout.html.twig" %}
+
+{% block title %}F2000.FR - Intranet formation - Dashboard{% endblock %}
+
+{% block header %}
+    <header>
+        <nav class="navbar navbar-inverse navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Portail formation</a>
+                </div>
+
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+                                {% if training %}
+                                    {{ training.shortName }}
+                                {% else %}
+                                    Choississez une formation
+                                {% endif %}
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for t in trainings %}
+                                    <li>
+                                        <a href="{{ path('user_dashboard', {'id' : t.id}) }}">{{ t.shortName }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="disabled">
+                                        <a href="#">Aucune {% if training %}autre {% endif %}formation disponible</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            {% include 'F2000FRTrainingCenterBundle:Partial:_menuUser.html.twig' %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {% block user_body %}
+        {% endblock %}
+    </div>
+{% endblock %}

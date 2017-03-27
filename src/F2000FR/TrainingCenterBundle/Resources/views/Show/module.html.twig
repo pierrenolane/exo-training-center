@@ -1,0 +1,172 @@
+<div id="module-view" class="row">
+    <div id="module-view-desc" class="col-md-5">
+        {% block addon %} {% endblock %}
+        <strong>Catégorie</strong> : {{ module.category.name }}<br />
+        <br />
+        <strong>Description</strong> :<br />
+        <div>{{ module.description | nl2br }}</div>
+        <br />
+
+        <strong>Points-clés</strong> :<br />
+        <div>
+            {{ module.keypoints | nl2br }}
+        </div>
+        <br />
+
+        {% if module.ressources is not empty %}
+            <strong>Ressources annexes</strong> :<br />
+            <div class="js-enable-link">
+                {{ module.ressources | nl2br }}
+            </div>
+            <br />
+        {% endif %}
+
+        {% if user.role == constant('ROLE_ADMIN', user) and module.privateContent is not empty %}
+            <strong>Contenu privé</strong> :<br />
+            <div class="js-enable-link">
+                {{ module.privateContent | nl2br }}
+            </div>
+        {% endif %}
+    </div>
+    <div id="module-view-tabs" class="col-md-7">
+        <ul class="nav nav-tabs">
+            <li class="{% if tab is null or tab == 'fiche' %}active{% endif %}">
+                <a href="#fiche" data-toggle="tab">Document de synthèse</a>
+            </li>
+            <li class="dropdown
+                {% if module.exercices | length == 0 %}disabled{% endif %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    Exercices ({{ module.exercices | length }}) <span class="caret"></span>
+                </a>
+                {% if module.exercices | length > 0 %}
+                    <ul class="dropdown-menu">
+                        {% for exercice in module.exercices %}
+                            <li>
+                                <a href="#exo-{{ exercice.id }}" data-toggle="tab">{{ exercice.reference ~ ' - ' ~ exercice.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+            <li class="
+                {% if tab == 'quizz' %}active{% endif %}
+                {% if not module.quizz %}disabled{% endif %}">
+                <a href="#quizz" {% if module.quizz is not null %}data-toggle="tab"{% endif %}>Quizz</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="fiche" class="tab-pane fade
+                 {% if tab is null or tab == 'fiche' %}in active{% endif %}">
+                {{ render(controller('F2000FRTrainingCenterBundle:Partial:modulePdfViewer', {'id' : module.id})) }}
+            </div>
+            {% for exercice in module.exercices %}
+                <div id="exo-{{ exercice.id }}" class="tab-pane fade">
+                    <h2>{{ exercice.reference }} - {{ exercice.name }}</h2>
+                    <br />
+                    <strong>Objectif</strong> :<br />
+                    <div>{{ exercice.description | nl2br }}</div>
+                    <br />
+
+                    {% if exercice.howTo is not empty %}
+                        <strong>Déroulement de l'exercice</strong> :<br />
+                        <div>
+                            {{ exercice.howTo | nl2br }}
+                        </div>
+                        <br />
+                    {% endif %}
+
+                    {% if corrections[module.reference ~ '-' ~ exercice.reference] is defined %}
+                        {% set corr = corrections[module.reference ~ '-' ~ exercice.reference] %}
+                        <div class="dropdown module-correction-btn">
+                            {% set restricted = trainingModule is defined and trainingModule.restricted %}
+
+                            <button type="button" data-toggle="dropdown"
+                                    class="btn btn-warning dropdown-toggle {% if restricted %}disabled{% endif %}">
+                                Correction&nbsp;<span class="caret"></span>
+                            </button>
+
+                            {% if not restricted %}
+                                <ul class="dropdown-menu">
+                                    {% if corr['url'] is defined %}
+                                        <li>
+                                            <a href="{{ corr['url'] }}"
+                                               target=_blank">
+                                                <span class="glyphicon glyphicon-eye-open"></span>Voir le corrigé
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if corr['zip'] is defined %}
+                                        <li>
+                                            <a href="{{ corr['zip'] }}"
+                                               target=_blank">
+                                                <span class="glyphicon glyphicon-download"></span>Télécharger le corrigé
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if exercice.clue %}
+                        <button class="btn btn-default" data-toggle="collapse" data-target="#clue-{{ exercice.id }}">
+                            <span class="glyphicon glyphicon-eye-open"></span>Voir l'indice
+                        </button>
+
+                        <div id="clue-{{ exercice.id }}" class="collapse">
+                            <br />
+                            <strong>Indice</strong> :<br />
+                            {{ exercice.clue | nl2br }}
+                            <br />
+                            <br />
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div id="quizz" class="tab-pane fade
+                 {% if tab == 'quizz' %}in active{% endif %}">
+                {% if module.quizz is not null %}
+                    <h2>{{ module.quizz.reference ~ ' - ' ~ module.quizz.name }}</h2>
+                    <center>
+                        {% if quizzResult is defined and quizzResult is not null %}
+                            {{ render(controller('F2000FRQuizzBundle:Default:showQuizzResult', {'id' : quizzResult.id})) }}
+                        {% elseif trainingModule is defined %}
+                            <span class="start-quizz btn btn-success" data-tm-id="{{ trainingModule.id }}">
+                                Démarrer le Quizz<br />
+                                <em>Temps estimé : 5 minutes</em>
+                            </span>
+                        {% else %}
+                            <span class="start-quizz btn btn-warning disabled">
+                                Le quizz n'est pas disponible dans ce mode<br />
+                            </span>
+                        {% endif %}
+                    </center>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        dynamizeContent($('#module-view'));
+
+    {% if module.quizz is not null and trainingModule is defined %}
+            $('.start-quizz').on('click', function () {
+                $.get('{{ path('show_quizz', { 'idTrainingModule': trainingModule.id }) }}')
+                        .done(function (content) {
+                            $('#modal-quizz').html(content).modal();
+                        });
+            });
+
+            $('#modal-quizz').on('hidden.bs.modal', function () {
+                $.get('{{ path('show_training_module', { 'id': trainingModule.id, 'tab' : 'quizz' }) }}')
+                        .done(function (content) {
+                            $('#modal-module').html(content);
+                        });
+            })
+    {% endif %}
+        });
+</script>

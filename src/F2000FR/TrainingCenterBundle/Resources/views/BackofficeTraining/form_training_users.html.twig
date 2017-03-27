@@ -1,0 +1,41 @@
+{{form_errors(form)}}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <select id="all-users" class="form-control" size="15">
+                {% for user in users if user not in training.users %}
+                    <option value="{{ user.id }}">{{ user.name }} ({{ user.login }})</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.users) }}
+    </div>
+</div>
+{{form_widget(form)}}
+
+<script>
+    $(document).ready(function () {
+        $('#all-users').on('dblclick', 'option', function () {
+            $('#training_user_users').append($('<option>', {
+                value: $(this).val(),
+                text: $(this).html()
+            }));
+            $(this).remove();
+
+            $('#training_user_users option').prop('selected', true);
+        });
+
+        $('#training_user_users').on('dblclick', 'option', function () {
+            $('#all-users').append($('<option>', {
+                value: $(this).val(),
+                text: $(this).html()
+            }));
+            $(this).remove();
+
+            $('#training_user_users option').prop('selected', true);
+        });
+    });
+</script>

@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-md-5">
+        {{ form_errors(form) }}
+        {{ form_row(form.file) }}
+        {{ form_widget(form) }}
+
+        {% for cv in cvs %}
+            CV {{ cv.createdDate | date('d/m/Y') }}<br/>
+        {% endfor %}
+    </div>
+    <div id="module-view-tabs" class="col-md-7">
+        {% if cvToShow is not null %}
+            {{ render(controller('F2000FRTrainingCenterBundle:Partial:cvPdfViewer', {'id' : cvToShow.id})) }}
+        {% endif %}
+    </div>
+</div>

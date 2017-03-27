@@ -1,0 +1,81 @@
+<div class="planning
+     {% if user.role == constant('ROLE_STUDENT', user) or user.role == constant('ROLE_ADMIN', user) %}show-module{% endif %}"
+     data-training-id="{{ training.id }}">
+    <div class="row">
+        {% set periodAM = constant('F2000FR\\TrainingCenterBundle\\Entity\\CalendarItem::PERIOD_AM') %}
+        {% set periodPM = constant('F2000FR\\TrainingCenterBundle\\Entity\\CalendarItem::PERIOD_PM') %}
+
+        {% set index = 1 %}
+        {% for day in calendarDays %}
+            {% set dayString = (day.date | date('Ymd')) %}
+            {% set isNow = (('now' | date('Ymd')) == dayString) %}
+            {% set isWeek = (day.date | date('w') == 6 or day.date | date('w') == 0) %}
+
+            <div class="day
+                 {{ isWeek ? 'col-md-1' : 'col-md-2' }}
+                 {{ isWeek ? 'week' : (day.has_training ? 'active' : 'off-day') }}
+                 {{ isNow ? 'now' }}">
+
+                {% if isNow %}<strong>{% endif %}
+                    <span class="day-title">{{ day.date | localizeddate('medium', 'none', null, null, 'E d MMM') | capitalize }}</span>
+                    {% if isNow %}</strong>{% endif %}
+
+                {% if day.has_training and not isWeek %}
+                    {% set periods = [periodAM, periodPM] %}
+
+                    {% for i in 0..1 %}
+                        {% set currentPeriod = cycle(periods, i) %}
+                        {% set currentKey = dayString ~ '_' ~ currentPeriod %}
+                        {% set offDay = calendarOffDays[currentKey] is defined %}
+                        <div class="day-halfpart {% if offDay %}off-day{% endif %}"
+                             data-day="{{ dayString }}"
+                             data-period="{{ currentPeriod }}">
+
+                            <ul class="module-list">
+                                {% if calendarTM[currentKey] is defined %}
+                                    {% for calendarTM in calendarTM[currentKey] %}
+                                        {% set colorClass = calendarTM.trainingModule.restricted ? 'btn-danger' : 'btn-success' %}
+                                        <li class="module {{ colorClass }}"
+                                            data-module-id = "{{ calendarTM.trainingModule.module.id }}"
+                                            data-tm-id = "{{ calendarTM.trainingModule.id }}"
+                                            data-calendar-tm-id = "{{ calendarTM.id }}">
+                                            {{ calendarTM.trainingModule.module.name }}
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                            <span class="glyphicon glyphicon-remove"></span>
+                            <span class="glyphicon glyphicon-ban-circle"></span>
+                        </div>
+                        {% if i == 0 %}
+                            <hr />
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            {% if index is divisible by(7) %}
+            </div>
+            <div class="row">
+            {% endif %}
+
+            {% set index = index + 1 %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.planning.show-module .module').on('click', function () {
+            if ($('#module-list-all').length > 0) {
+                // admin mode
+                return;
+            }
+
+            $.get('{{app.request.getBaseURL()}}/show/training-module/' + $(this).data('tm-id'))
+                    .done(function (content) {
+                        $('#modal-module').html(content).modal();
+                    });
+        });
+    });
+</script>

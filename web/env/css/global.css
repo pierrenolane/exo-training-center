@@ -1,0 +1,323 @@
+@import url(forms.css);
+@import url(menus.css);
+@import url(bs-dashboard.css);
+@import url(useful-classes.css);
+
+/* Overwrite Boostrap */
+.modal-lg.upsize {
+    width: 1200px;
+}
+
+body {
+    font-family: Times New Roman;
+    background-color:#EFF1F2;
+}
+ul {
+    padding-left:0px;
+}
+
+h1 {
+    font-size: 30px;
+    margin: 30px 0 20px 0;
+    text-align: center;
+    color: #15406b;
+}
+h2 {
+    font-size: 22px;
+    margin: 30px 0 20px 0;
+    text-align: center;
+    color: #15406b;
+}
+
+header, footer {
+    text-align:center;
+}
+
+header.maintenance nav {
+    background-image: -webkit-linear-gradient(top,#3c3c3c 0,red 100%);
+    background-image: -o-linear-gradient(top,#3c3c3c 0,red 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#3c3c3c),to(red));
+    background-image: linear-gradient(to bottom,#3c3c3c 0,red 100%);
+}
+header.maintenance nav.navbar-inverse .navbar-nav > .active > a, header.maintenance nav.navbar-inverse .navbar-nav > .open > a {
+    background-image: -webkit-linear-gradient(top,#080808 0,red 100%);
+    background-image: -o-linear-gradient(top,#080808 0,red 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#080808),to(red));
+    background-image: linear-gradient(to bottom,#080808 0,red 100%);
+}
+
+#content-login, #content-error {
+    padding:25px;
+    text-align:center;
+    width:350px;
+    margin:auto;
+}
+#content-login .white-zone {
+    padding: 10px 20px 20px 20px;
+}
+#content-error h2 {
+    color: #a94442;
+}
+
+.glyphicon {
+    margin-right: 5px;
+}
+button .glyphicon {
+    margin-right: 0px;
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+.table .col-centered {
+    text-align: center;
+}
+
+.scroll-y-450 {
+    height: 450px;
+    overflow-y: scroll;
+}
+
+table td.actions span {
+    cursor: pointer;
+}
+
+/*          */
+/* PLANNING */
+/*          */
+.planning .day {
+    border: 1px solid #e5e5e5;
+    height:250px;
+    text-align:center;
+    font-size:9px;
+}
+.planning .day .day-title {
+    text-decoration: underline;
+}
+.planning .day .module {
+    width: 95%;
+    margin: 2px auto;
+}
+.planning.show-module .day .module {
+    cursor: pointer;
+}
+.planning .day {
+    padding: 2px;
+}
+.planning .day.active .day-halfpart {
+    position: relative;
+    background-color: #f3e6544d;
+}
+.planning .day.active .day-halfpart .glyphicon {
+    position:absolute;
+    top:95px;
+    left:130px;
+    display:none;
+    cursor: pointer;
+}
+.planning .day hr {
+    width:75%;
+    margin: 8px auto;
+}
+.planning .off-day {
+    background: repeating-linear-gradient(
+        -45deg,
+        #ccc,
+        #ccc 10px,
+        #eee 10px,
+        #eee 20px
+        );
+}
+
+.planning .day.week {
+    background-color : lightgrey;
+}
+.planning .day.now {
+    border: 3px solid mediumturquoise;
+}
+.planning .day-halfpart, .planning .module-list {
+    margin: 2px;
+    height: 105px;
+}
+.planning .module-list {
+    list-style-type: none;
+    text-align:left;
+}
+
+.planning-actions {
+    margin:10px;
+}
+
+/*          */
+/* MODULE   */
+/*          */
+#module-list-all {
+    height: 500px;
+    overflow-y : scroll;
+}
+#module-list-all ul {
+    list-style-type: none;
+}
+.module-list-header {
+    text-decoration: underline;
+    text-align: center;
+}
+#module-list-all .module {
+    border:1px solid #1587BD;
+    background-color:#9FC6E7;
+}
+.module {
+    margin: 2px;
+    padding: 1px;
+    width: 200px;
+}
+.module.red {
+    border:1px solid #A64232;
+    background-color:#F83A22;
+}
+.module.blue {
+    border:1px solid #1587BD;
+    background-color:#9FC6E7;
+}
+.module.green {
+    border:1px solid #4DB810;
+    background-color:#7BD148;
+}
+.module-correction-btn {
+    display: inline-block;
+    position: absolute;
+    right: 50px;
+}
+.drop-zone.ui-droppable-active {
+    background-color:#F83A22;
+}
+
+.tab-content  {
+    border-left: 1px solid #ddd;
+    height:625px;
+    padding:10px;
+}
+.tab-content #fiche {
+    text-align:center;
+}
+.tab-content #quizz .start-quizz {
+    margin: 100px;
+    padding: 25px;
+}
+
+/*              */
+/* PDF-VIEWER   */
+/*              */
+#pdf-viewer {
+    width:650px;
+    height:600px;
+    overflow-y:scroll;
+}
+#pdf-viewer canvas {
+    border: 1px solid #ddd;
+}
+
+/*              */
+/* PROGRESS-BAR */
+/*              */
+progress {
+    display: inline-block; /* default: inline-block */
+    width: 300px;
+    vertical-align: middle;
+    padding: 4px;
+    border: 0 none;
+    background: #444;
+    border-radius: 14px;
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5),
+        0px 1px 0px rgba(255,255,255,0.2);
+}
+progress::-moz-progress-bar {
+    background: #FFF;
+    border-radius: 12px;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4),
+        0 2px 5px 0px rgba(0,0,0,0.3);
+}
+
+/* une méthode pour ne cibler que Chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    progress {
+        height: 25px; /* légèrement plus fin sur Chrome par défaut */
+    }
+}
+/* on enlève le fond de cet élément supplémentaire */
+progress::-webkit-progress-bar {
+    background: transparent;
+}
+/* on applique les mêmes styles que sur ::-moz-progress-bar */
+progress::-webkit-progress-value {
+    background: #FFF;
+    border-radius: 12px;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4),
+        0 2px 5px 0px rgba(0,0,0,0.3);
+}
+
+
+/*       */
+/* QUIZZ */
+/*       */
+.glyphicon.glyphicon-dot {
+    margin-bottom: -.8em;
+    overflow: hidden;
+}
+.glyphicon.glyphicon-dot:before {
+    content: "\25cb";
+    font-size: 3em;
+}
+.glyphicon.glyphicon-dot.full:before {
+    content: "\25cf";
+    font-size: 3em;
+    opacity: 0.5;
+}
+.glyphicon.glyphicon-dot.active:before {
+    content: "\25cf";
+    font-size: 3em;
+    opacity: 1;
+}
+
+#quizz-create .question-container {
+    margin-bottom: 20px;
+}
+#quizz-create .quizz-response {
+    margin-top: 8px;
+}
+#quizz-create .delete-question, #quizz-create .delete-response {
+    margin: 6px 0px 0px 20px;
+}
+#quizz-create .add-padding-horiz {
+    padding: 0px 10px;
+}
+
+#quizz-result h4 {
+    margin-top: 25px;
+}
+#quizz-result li {
+    list-style-type: none;
+    padding: 5px 0px;
+}
+
+#quizz-answer .quizz-step {
+    width: 600px;
+    height: 300px;
+    margin: auto;
+}
+#quizz-answer .quizz-step .va-75 {
+    transform: translateY(75%);
+}
+
+#quizz-create .actions, #quizz-answer .actions {
+    margin-top:20px;
+}
+
+#modal-quizz .modal-dialog {
+    width: 98%;
+    height: 100%;
+}
+#modal-quizz .modal-content {
+    min-height: 98%;
+    text-align: center;
+}
