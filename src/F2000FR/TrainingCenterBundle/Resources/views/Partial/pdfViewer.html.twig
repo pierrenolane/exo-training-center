@@ -1,4 +1,6 @@
 <div id="pdf-viewer"></div>
+<div id="zoom-out">Zoom (-)</div>
+<div id="zoom-in">Zoom (+)</div>
 
 <script>
     var pdfDoc = null, scale = 1;
@@ -13,11 +15,21 @@
                             {format: CryptoJSAesJson}).toString(CryptoJS.enc.Utf8)
                     );
             loadPdf(url);
+            $('#zoom-in').on('click', function () {
+                scale += 0.2;
+                renderAllPages();
+            });
+            $('#zoom-out').on('click', function () {
+                scale -= 0.2;
+                renderAllPages();
+            });
+
+
         } else {
             $('#pdf-viewer').hide();
         }
-    });
-
+    }
+    );
     /**
      * Asynchronously downloads PDF
      * @param url Pdf path
@@ -25,7 +37,6 @@
     function loadPdf(url) {
         PDFJS.getDocument(url).then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
-
             // Initial/first page rendering
             renderAllPages();
         });
@@ -35,6 +46,7 @@
      * Get each page info from document and render page.
      */
     function renderAllPages() {
+        $('#pdf-viewer').html('');
         for (var i = 1; i <= pdfDoc.numPages; i++) {
             renderPage(i);
         }
