@@ -49,6 +49,9 @@ class BackofficeUserController extends BaseController {
             $oUserTmp->setCreatedDate(new \DateTime());
             $oUserTmp->setUpdatedDate(new \DateTime());
 
+            $sPassword = $this->cryptPwd($oUserTmp->getPassword());
+            $oUserTmp->setPassword($sPassword);
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($oUserTmp);
             $em->flush();
@@ -143,6 +146,11 @@ class BackofficeUserController extends BaseController {
             'btn_type' => 'btn-danger',
             'btn_label' => 'Supprimer',
         );
+    }
+
+    private function cryptPwd($sMotdepasse) {
+        $sSalt = $this->getParameter('crypt_key');
+        return sha1($sSalt . $sMotdepasse . $sSalt);
     }
 
 }

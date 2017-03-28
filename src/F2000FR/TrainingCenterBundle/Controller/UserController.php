@@ -194,8 +194,15 @@ class UserController extends BaseController {
             }
 
             $isAccessAllowed = $oUserTmp && ($oUserTmp->isAdmin() || !$bMaintenance);
+
             if ($isAccessAllowed) {
-                if ($oUserTmp->verifAuth($oUser->getPassword())) {
+                //    if ($oUserTmp->verifAuth($oUser->getPassword())) {
+                //ENCLENCHER LA FONCTION DE CRYPTAGE ICI
+                $cryptPassword = $this->cryptPwd($oUser->getPassword());
+                if ($oUserTmp->verifAuth($cryptPassword)) {
+
+
+
                     $oSession->set('oUser', $oUserTmp);
                     return $this->redirect($this->generateUrl('home'));
                 } else {
@@ -220,6 +227,11 @@ class UserController extends BaseController {
     public function logoutAction(Request $request) {
         $request->getSession()->clear();
         return $this->redirect($this->generateUrl('login'));
+    }
+
+    private function cryptPwd($sMotdepasse) {
+        $sSalt = $this->getParameter('crypt_key');
+        return sha1($sSalt . $sMotdepasse . $sSalt);
     }
 
 }
